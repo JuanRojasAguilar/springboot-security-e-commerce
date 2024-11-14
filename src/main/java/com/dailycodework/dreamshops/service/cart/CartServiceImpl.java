@@ -1,7 +1,6 @@
 package com.dailycodework.dreamshops.service.cart;
 
 import java.math.BigDecimal;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.modelmapper.ModelMapper;
@@ -61,17 +60,15 @@ public class CartServiceImpl implements CartService {
   @Override
   public CartDto initializeNewCart(UserDto user) {
     User userInstance = userRepository
-        .findById(user.getId())
-        .orElseThrow(() -> new ResourceNotFoundException("User Not Found"));
-
-    return Optional
-        .ofNullable(getCartByUserId(userInstance.getId()))
-        .orElseGet(() -> {
-          Cart cart = new Cart();
-          cart.setUser(userInstance);
-          cart = cartRepository.save(cart);
-          return converToDto(cart);
-        });
+        .findById(user.getId()).get();
+    try {
+      return getCartByUserId(userInstance.getId());
+    } catch (ResourceNotFoundException e) {
+      Cart cart = new Cart();
+      cart.setUser(userInstance);
+      cart = cartRepository.save(cart);
+      return converToDto(cart);
+    }
   }
 
   @Override

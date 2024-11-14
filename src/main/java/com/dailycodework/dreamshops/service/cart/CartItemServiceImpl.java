@@ -35,20 +35,21 @@ public class CartItemServiceImpl implements CartItemService {
         .orElseThrow(() -> new ResourceNotFoundException("Product non existent"));
 
     // 3. Check if product exists in car
-    CartItem cartItem = getCartItemByCartAndProduct(cartId, productId);
+    CartItem cartItem = null;
+    try {
+      cartItem = getCartItemByCartAndProduct(cartId, productId);
+      cartItem.setQuantity(cartItem.getQuantity() + quantity);
 
-    // 4. a. if yes increase quantity
-    // b. no, create
-    if (cartItem.getId() == null) {
+    } catch (RuntimeException e) {
+      cartItem = new CartItem();
       cartItem.setProduct(product);
       cartItem.setQuantity(quantity);
       cartItem.setCart(cart);
       cartItem.setUnitPrice(product.getPrice());
-    } else {
-      cartItem.setQuantity(cartItem.getQuantity() + quantity);
     }
+
     cartItem.setTotalPrice();
-    cart.addCartItem(cartItem);
+    cart.setCartItem(cartItem);
     cartItemRepository.save(cartItem);
     cartRepository.save(cart);
   }
