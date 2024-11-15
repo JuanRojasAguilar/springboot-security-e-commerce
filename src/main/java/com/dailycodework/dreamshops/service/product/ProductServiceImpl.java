@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.dailycodework.dreamshops.dto.ImageDto;
 import com.dailycodework.dreamshops.dto.ProductDto;
+import com.dailycodework.dreamshops.exceptions.AlreadyExistsException;
 import com.dailycodework.dreamshops.exceptions.ResourceNotFoundException;
 import com.dailycodework.dreamshops.model.Category;
 import com.dailycodework.dreamshops.model.Image;
@@ -29,6 +30,10 @@ public class ProductServiceImpl implements ProductService {
 
   @Override
   public ProductDto addProduct(ProductRequest request) {
+    if (productExists(request.getName(), request.getBrand())) {
+      throw new AlreadyExistsException(
+          "The product: " + request.getName() + " Brand: " + request.getBrand() + ". Already Exists");
+    }
     Category category = Optional
         .ofNullable(
             categoryRepository.findByName(request.getCategory().getName()))
@@ -145,6 +150,10 @@ public class ProductServiceImpl implements ProductService {
         .toList();
     productDto.setImages(imageDtos);
     return productDto;
+  }
+
+  private boolean productExists(String name, String brand) {
+    return productRepository.existsByNameAndBrand(name, brand);
   }
 
 }

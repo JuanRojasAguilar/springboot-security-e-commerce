@@ -1,7 +1,6 @@
 package com.dailycodework.dreamshops.service.cart;
 
 import java.math.BigDecimal;
-import java.util.concurrent.atomic.AtomicLong;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -25,7 +24,6 @@ public class CartServiceImpl implements CartService {
   private final CartItemRepository cartItemRepository;
   private final UserRepository userRepository;
   private final ModelMapper modelMapper;
-  private final AtomicLong cardIdGenerator = new AtomicLong(0);
 
   @Override
   public CartDto getCart(Long id) {

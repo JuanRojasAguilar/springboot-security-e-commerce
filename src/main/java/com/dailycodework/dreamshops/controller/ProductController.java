@@ -2,6 +2,7 @@ package com.dailycodework.dreamshops.controller;
 
 import java.util.List;
 
+import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dailycodework.dreamshops.dto.ProductDto;
+import com.dailycodework.dreamshops.exceptions.AlreadyExistsException;
 import com.dailycodework.dreamshops.exceptions.ResourceNotFoundException;
 import com.dailycodework.dreamshops.requests.ProductRequest;
 import com.dailycodework.dreamshops.response.ApiResponse;
@@ -50,6 +52,8 @@ public class ProductController {
     try {
       ProductDto newProduct = productService.addProduct(product);
       return ResponseEntity.ok(new ApiResponse("Add Product ", newProduct));
+    } catch (AlreadyExistsException | ResourceNotFoundException e) {
+      return ResponseEntity.status(CONFLICT).body(new ApiResponse(e.getMessage(), null));
     } catch (Exception e) {
       return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ApiResponse(e.getMessage(), null));
     }

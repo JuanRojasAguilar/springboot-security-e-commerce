@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -32,6 +34,7 @@ public class Cart {
   private Set<CartItem> cartItems = new HashSet<>();
 
   @OneToOne
+  @JsonIgnore
   @JoinColumn(name="user_id")
   private User user;
 
