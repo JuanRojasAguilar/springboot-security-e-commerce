@@ -6,6 +6,7 @@ import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -48,6 +49,7 @@ public class ProductController {
   }
 
   @PostMapping("/add")
+  @PreAuthorize("hasRole('ROLE_ADMIN')")
   public ResponseEntity<ApiResponse> addProduct(@RequestBody ProductRequest product) {
     try {
       ProductDto newProduct = productService.addProduct(product);
@@ -60,6 +62,7 @@ public class ProductController {
   }
 
   @PutMapping("/{id}/update")
+  @PreAuthorize("hasRole('ROLE_ADMIN')")
   public ResponseEntity<ApiResponse> updateProduct(@RequestBody ProductRequest request, @PathVariable Long id) {
     try {
       ProductDto product = productService.updateProduct(request, id);
@@ -70,6 +73,7 @@ public class ProductController {
   }
 
   @DeleteMapping("/{id}/delete")
+  @PreAuthorize("hasRole('ROLE_ADMIN')")
   public ResponseEntity<ApiResponse> deleteProduct(@PathVariable Long id) {
     try {
       productService.deleteProductById(id);

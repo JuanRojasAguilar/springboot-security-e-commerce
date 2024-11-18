@@ -66,6 +66,5 @@ public class JwtUtils {
     } catch (JwtException | IllegalArgumentException e) {
       throw new JwtException(e.getMessage());
     }
-
   }
 }

@@ -46,7 +46,6 @@ public class AuthTokenFilter extends OncePerRequestFilter {
       response.getWriter().write(e.getMessage());
       return;
     }
-
     filterChain.doFilter(request, response);
   }
 

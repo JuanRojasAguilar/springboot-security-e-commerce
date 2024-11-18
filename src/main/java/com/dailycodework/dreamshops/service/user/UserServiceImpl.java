@@ -3,6 +3,9 @@ package com.dailycodework.dreamshops.service.user;
 import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.dailycodework.dreamshops.dto.UserDto;
@@ -20,6 +23,15 @@ import lombok.RequiredArgsConstructor;
 public class UserServiceImpl implements UserService {
   private final UserRepository userRepository;
   private final ModelMapper modelMapper;
+  private final PasswordEncoder passwordEncoder;
+
+  @Override
+  public UserDto getAuthenticatedUser() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    String email = authentication.getName();
+    User user = userRepository.findByEmail(email);
+    return convertToDto(user);
+  }
 
   @Override
   public UserDto getUserById(Long userId) {
@@ -39,7 +51,7 @@ public class UserServiceImpl implements UserService {
           user.setEmail(req.getEmail());
           user.setFirstName(req.getFirstName());
           user.setLastName(req.getLastName());
-          user.setPassword(req.getPassword());
+          user.setPassword(passwordEncoder.encode(req.getPassword()));
           userRepository.save(user);
           return convertToDto(user);
         })

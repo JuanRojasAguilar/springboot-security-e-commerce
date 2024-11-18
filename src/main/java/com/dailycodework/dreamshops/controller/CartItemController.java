@@ -1,6 +1,7 @@
 package com.dailycodework.dreamshops.controller;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +19,7 @@ import com.dailycodework.dreamshops.service.cart.CartItemService;
 import com.dailycodework.dreamshops.service.cart.CartService;
 import com.dailycodework.dreamshops.service.user.UserService;
 
+import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -30,16 +32,17 @@ public class CartItemController {
 
   @PostMapping("/add")
   public ResponseEntity<ApiResponse> addItemToCart(
-    @RequestParam Long productId,
-    @RequestParam Integer quantity
-  ) {
+      @RequestParam Long productId,
+      @RequestParam Integer quantity) {
     try {
-      UserDto user = userService.getUserById(1L);
+      UserDto user = userService.getAuthenticatedUser();
       CartDto cart = cartService.initializeNewCart(user);
       cartItemService.addCartItem(cart.getCartId(), productId, quantity);
       return ResponseEntity.ok(new ApiResponse("Success", null));
     } catch (ResourceNotFoundException e) {
       return ResponseEntity.status(NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
+    } catch (JwtException e) {
+      return ResponseEntity.status(UNAUTHORIZED).body(new ApiResponse(e.getMessage(), null));
     }
   }
 
@@ -55,10 +58,9 @@ public class CartItemController {
 
   @PutMapping("/cart/{cartId}/item/{itemId}/update")
   public ResponseEntity<ApiResponse> updateItemQuantity(
-    @PathVariable Long cartId,
-    @PathVariable Long productId,
-    @RequestParam Integer quantity
-  ){
+      @PathVariable Long cartId,
+      @PathVariable Long productId,
+      @RequestParam Integer quantity) {
     try {
       cartItemService.updateItemQuantity(cartId, productId, quantity);
       return ResponseEntity.ok(new ApiResponse("Success", null));
